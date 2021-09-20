@@ -7,18 +7,26 @@
 
 namespace xstd {
 
-struct bitrange {
+struct bitrange
+{
   uint32_t position;
   uint32_t width;
 
-  template <size_t start, size_t end>
-  static constexpr bitrange from() {
+  template<size_t start, size_t end>
+  static constexpr bitrange from()
+  {
     static_assert(end > start, "The start bit must be less then the end bit!");
-    return bitrange{.position = start, .width = end - start};
+    return bitrange{ .position = start, .width = end - start };
+  }
+  template<size_t start>
+  static constexpr bitrange from()
+  {
+    return bitrange{ .position = start, .width = 1 };
   }
 
-  template <typename T>
-  constexpr auto origin_mask() const {
+  template<typename T>
+  constexpr auto origin_mask() const
+  {
     // Need to use an unsigned version of the type T for the mask to make sure
     // that the shift right doesn't result in a sign extended shift.
     using UnsignedT = typename std::make_unsigned<T>::type;
@@ -33,13 +41,14 @@ struct bitrange {
     // Create mask by shifting the set of 1s down so that the number of 1s from
     // bit position 0 is equal to the width parameter.
     UnsignedT bitmask_at_origin =
-        static_cast<UnsignedT>(kFieldOfOnes >> (kTargetWidth - width));
+      static_cast<UnsignedT>(kFieldOfOnes >> (kTargetWidth - width));
 
     return bitmask_at_origin;
   }
 
-  template <typename T>
-  constexpr auto mask() const {
+  template<typename T>
+  constexpr auto mask() const
+  {
     // Need to use an unsigned version of the type T for the mask to make sure
     // that the shift right doesn't result in a sign extended shift.
     using UnsignedT = decltype(origin_mask<T>());
@@ -47,35 +56,68 @@ struct bitrange {
     return static_cast<UnsignedT>(origin_mask<T>() << position);
   }
 
-  template <typename T>
-  constexpr auto inverted_mask() const {
+  template<typename T>
+  constexpr auto inverted_mask() const
+  {
     return ~mask<T>();
   }
 };
 
-template <typename T>
-class bitset : public std::bitset<sizeof(T) * 8> {
- public:
+template<typename T>
+class bitset : public std::bitset<sizeof(T) * 8>
+{
+public:
   static constexpr size_t kBitWidth = sizeof(T) * 8;
-  bitset(T initial_value) : std::bitset<kBitWidth>(initial_value) {}
+  bitset(T initial_value)
+    : std::bitset<kBitWidth>(initial_value)
+  {}
 
-  auto& set(std::size_t pos, bool value = true) {
+  auto& set(std::size_t pos, bool value = true)
+  {
     static_cast<std::bitset<kBitWidth>*>(this)->set(pos, value);
     return *this;
   }
 
-  auto& reset(std::size_t pos) {
+  auto& set(xstd::bitrange p_range)
+  {
+    this->set(p_range.position);
+    return *this;
+  }
+
+  auto& reset(std::size_t pos)
+  {
     static_cast<std::bitset<kBitWidth>*>(this)->reset(pos);
     return *this;
   }
 
-  auto& flip(std::size_t pos) {
+  auto& reset(xstd::bitrange p_range)
+  {
+    this->reset(p_range.position);
+    return *this;
+  }
+
+  auto& flip(std::size_t pos)
+  {
     static_cast<std::bitset<kBitWidth>*>(this)->flip(pos);
     return *this;
   }
 
-  template <bitrange field, typename U>
-  constexpr auto& insert(U value) {
+  auto& flip(xstd::bitrange p_range)
+  {
+    this->flip(p_range.position);
+    return *this;
+  }
+
+  auto test(std::size_t pos)
+  {
+    return static_cast<std::bitset<kBitWidth>*>(this)->test(pos);
+  }
+
+  auto test(xstd::bitrange p_range) { return this->test(p_range.position); }
+
+  template<bitrange field, typename U>
+  constexpr auto& insert(U value)
+  {
     using NormalT = std::remove_volatile_t<T>;
     auto kBitmask = field.mask<std::remove_volatile_t<T>>();
     auto kInvertedBitmask = field.inverted_mask<std::remove_volatile_t<T>>();
@@ -91,26 +133,34 @@ class bitset : public std::bitset<sizeof(T) * 8> {
     return *this;
   }
 
-  template <bitrange mask>
-  [[nodiscard]] constexpr auto extract() {
+  template<bitrange mask>
+  [[nodiscard]] constexpr auto extract()
+  {
     // Create mask by shifting the set of 1s down so that the number of 1s
     // from bit position 0 is equal to the width parameter.
     return std::bitset<mask.width>(this->to_ullong() >> mask.position);
   }
 };
 
-template <typename T>
-class bitmanip : public xstd::bitset<T> {
- public:
+template<typename T>
+class bitmanip : public xstd::bitset<T>
+{
+public:
   bitmanip(T& register_reference)
-      : xstd::bitset<T>(register_reference),
-        register_reference_(register_reference) {}
+    : xstd::bitset<T>(register_reference)
+    , register_reference_(register_reference)
+  {}
 
-  void save() { register_reference_ = static_cast<T>(this->to_ullong()); }
+  void save()
+  {
+    if constexpr (!std::is_const_v<T>) {
+      register_reference_ = static_cast<T>(this->to_ullong());
+    }
+  }
 
   ~bitmanip() { save(); }
 
- private:
+private:
   T& register_reference_;
 };
-}  // namespace xstd
+} // namespace xstd
