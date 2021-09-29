@@ -9,7 +9,7 @@ class libxbitset_conan(ConanFile):
     url = "https://github.com/SJSU-Dev2/libxbitset"
     description = "Extension of std::bitset that includes multi-bit insertion and extraction and more"
     topics = ("bit manipulation", "bits", "hardware", "registers")
-    exports_sources = "CMakeLists.txt", "libxbitset/*"
+    exports_sources = "CMakeLists.txt", "include/*"
     no_copy_source = True
 
     def package(self):
@@ -17,6 +17,3 @@ class libxbitset_conan(ConanFile):
 
     def package_id(self):
         self.info.header_only()
-
-    def package_info(self):
-        self.cpp_info.includedirs = ["."]

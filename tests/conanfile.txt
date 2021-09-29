@@ -1,0 +1,6 @@
+[requires]
+libxbitset/[>=0.0.1]
+boost-ext-ut/1.1.8
+
+[generators]
+cmake_find_package_multi
