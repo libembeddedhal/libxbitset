@@ -108,12 +108,15 @@ public:
     return *this;
   }
 
-  auto test(std::size_t pos)
+  auto test(std::size_t pos) const
   {
-    return static_cast<std::bitset<kBitWidth>*>(this)->test(pos);
+    return static_cast<const std::bitset<kBitWidth>*>(this)->test(pos);
   }
 
-  auto test(xstd::bitrange p_range) { return this->test(p_range.position); }
+  auto test(xstd::bitrange p_range) const
+  {
+    return this->test(p_range.position);
+  }
 
   template<bitrange field, typename U>
   constexpr auto& insert(U value)
