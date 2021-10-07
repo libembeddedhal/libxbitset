@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.1...3.21)
 
 project(libxbitset VERSION 0.0.1 LANGUAGES CXX)
-add_library(libxbitset INTERFACE)
+add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE include)
-target_compile_features(libxbitset INTERFACE cxx_std_20)
-set_target_properties(libxbitset PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}
