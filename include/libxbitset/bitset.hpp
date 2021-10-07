@@ -16,7 +16,7 @@ struct bitrange
   static constexpr bitrange from()
   {
     static_assert(end > start, "The start bit must be less then the end bit!");
-    return bitrange{ .position = start, .width = end - start };
+    return bitrange{ .position = start, .width = 1 + (end - start) };
   }
   template<size_t start>
   static constexpr bitrange from()
