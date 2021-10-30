@@ -154,11 +154,18 @@ public:
     , register_reference_(register_reference)
   {}
 
-  void save()
+  auto& save()
   {
     if constexpr (!std::is_const_v<T>) {
       register_reference_ = static_cast<T>(this->to_ullong());
     }
+    return *this;
+  }
+
+  auto& update()
+  {
+    *static_cast<xstd::bitset<T>*>(this) = register_reference_;
+    return *this;
   }
 
   ~bitmanip() { save(); }
