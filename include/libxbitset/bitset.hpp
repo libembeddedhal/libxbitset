@@ -12,16 +12,21 @@ struct bitrange
   uint32_t position;
   uint32_t width;
 
-  template<size_t start, size_t end>
+  template<size_t BitPosition1, size_t BitPosition2>
   static constexpr bitrange from()
   {
-    static_assert(end > start, "The start bit must be less then the end bit!");
-    return bitrange{ .position = start, .width = 1 + (end - start) };
+    if constexpr (BitPosition1 <= BitPosition2) {
+      return bitrange{ .position = BitPosition1,
+                       .width = 1 + (BitPosition1 - BitPosition2) };
+    } else {
+      return bitrange{ .position = BitPosition2,
+                       .width = 1 + (BitPosition2 - BitPosition1) };
+    }
   }
-  template<size_t start>
+  template<size_t BitPosition>
   static constexpr bitrange from()
   {
-    return bitrange{ .position = start, .width = 1 };
+    return bitrange{ .position = BitPosition, .width = 1 };
   }
 
   template<typename T>
@@ -61,20 +66,25 @@ struct bitrange
   {
     return ~mask<T>();
   }
+
+  constexpr bool operator==(const bitrange& other)
+  {
+    return other.position == position && other.width == width;
+  }
 };
 
 template<typename T>
 class bitset : public std::bitset<sizeof(T) * 8>
 {
 public:
-  static constexpr size_t kBitWidth = sizeof(T) * 8;
+  static constexpr size_t bit_width = sizeof(T) * 8;
   bitset(T initial_value)
-    : std::bitset<kBitWidth>(initial_value)
+    : std::bitset<bit_width>(initial_value)
   {}
 
   auto& set(std::size_t pos, bool value = true)
   {
-    static_cast<std::bitset<kBitWidth>*>(this)->set(pos, value);
+    static_cast<std::bitset<bit_width>*>(this)->set(pos, value);
     return *this;
   }
 
@@ -86,7 +96,7 @@ public:
 
   auto& reset(std::size_t pos)
   {
-    static_cast<std::bitset<kBitWidth>*>(this)->reset(pos);
+    static_cast<std::bitset<bit_width>*>(this)->reset(pos);
     return *this;
   }
 
@@ -98,7 +108,7 @@ public:
 
   auto& flip(std::size_t pos)
   {
-    static_cast<std::bitset<kBitWidth>*>(this)->flip(pos);
+    static_cast<std::bitset<bit_width>*>(this)->flip(pos);
     return *this;
   }
 
@@ -110,7 +120,7 @@ public:
 
   auto test(std::size_t pos) const
   {
-    return static_cast<const std::bitset<kBitWidth>*>(this)->test(pos);
+    return static_cast<const std::bitset<bit_width>*>(this)->test(pos);
   }
 
   auto test(xstd::bitrange p_range) const
