@@ -13,14 +13,15 @@ struct bitrange
   uint32_t width;
 
   template<size_t BitPosition1, size_t BitPosition2>
-  static constexpr bitrange from()
+  static consteval bitrange from()
   {
+    constexpr uint32_t plus_one = 1;
     if constexpr (BitPosition1 <= BitPosition2) {
       return bitrange{ .position = BitPosition1,
-                       .width = 1 + (BitPosition1 - BitPosition2) };
+                       .width = plus_one + (BitPosition1 - BitPosition2) };
     } else {
       return bitrange{ .position = BitPosition2,
-                       .width = 1 + (BitPosition2 - BitPosition1) };
+                       .width = plus_one + (BitPosition2 - BitPosition1) };
     }
   }
   template<size_t BitPosition>
@@ -147,7 +148,7 @@ public:
   }
 
   template<bitrange mask>
-  [[nodiscard]] constexpr auto extract()
+  [[nodiscard]] constexpr auto extract() const
   {
     // Create mask by shifting the set of 1s down so that the number of 1s
     // from bit position 0 is equal to the width parameter.
