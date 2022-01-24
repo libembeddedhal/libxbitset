@@ -16,12 +16,12 @@ struct bitrange
   static consteval bitrange from()
   {
     constexpr uint32_t plus_one = 1;
-    if constexpr (BitPosition1 <= BitPosition2) {
+    if constexpr (BitPosition1 < BitPosition2) {
       return bitrange{ .position = BitPosition1,
-                       .width = plus_one + (BitPosition1 - BitPosition2) };
+                       .width = plus_one + (BitPosition2 - BitPosition1) };
     } else {
       return bitrange{ .position = BitPosition2,
-                       .width = plus_one + (BitPosition2 - BitPosition1) };
+                       .width = plus_one + (BitPosition1 - BitPosition2) };
     }
   }
   template<size_t BitPosition>
