@@ -56,18 +56,18 @@ The difference between them is as follows:
 ```C++
 // Example register to act as a substitute for a hardware peripherals' register
 // file
-struct ExampleRegister
+struct example_register
 {
   volatile uint64_t CTRL1 = 0;
   volatile uint64_t CTRL2 = 0;
 };
 
-// Creating a global instance of ExampleRegister to be manipulated
-ExampleRegister memory{};
+// Creating a global instance of example_register to be manipulated
+example_register memory{};
 
 // Created a pointer to the memory as this is what will be done on most/all
 // system, where memory is accessed by address literals directly.
-ExampleRegister* reg = &memory;
+example_register* reg = &memory;
 
 int main()
 {
@@ -161,3 +161,12 @@ eliminated and almost all function calls are eliminated.
 
 TBD
 
+## Installing as Conan Package & Unit Testing
+
+To install the library as a package and run the unit tests is simple. Simply run
+
+```bash
+conan create .
+```
+
+Before the install phase of the package creation is unit test validation.

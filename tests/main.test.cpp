@@ -1,17 +1,17 @@
 #include <boost/ut.hpp>
-#include <cinttypes>
+#include <cstdint>
 #include <libxbitset/bitset.hpp>
 
 using namespace boost::ut;
 
-struct Register
+struct dummy_register
 {
   volatile uint64_t CTRL1;
   volatile uint64_t CTRL2;
 };
 
-Register memory{};
-Register* reg = &memory;
+dummy_register memory{};
+dummy_register* reg = &memory;
 
 int main()
 {

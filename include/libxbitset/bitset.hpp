@@ -1,7 +1,7 @@
 #pragma once
 
 #include <bitset>
-#include <cinttypes>
+#include <cstdint>
 #include <limits>
 #include <type_traits>
 
