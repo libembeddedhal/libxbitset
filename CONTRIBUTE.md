@@ -11,7 +11,7 @@
 
 ### Install conan
 
-At the root of the repository
+At the root of the repository run:
 
 ```
 conan install .
@@ -19,19 +19,8 @@ conan install .
 
 ### Run test
 
-Building the test binary:
+At the root of the repository run:
 
 ```
-cd tests
-mkdir build
-cd build
-conan install ..
-cmake ..
-make
-```
-
-Running the test:
-
-```
-./test
+conan create .
 ```
