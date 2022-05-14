@@ -95,5 +95,10 @@ boost::ut::suite bitset_test = [](){
         expect(that % 0x0000'FFFF == test_set.set(16,false));
         expect(that % 0x0001'FFFF == test_set.set(16));
     };
+
+    "bitset::set() set out of range"_test = [](){
+        xstd::bitset test_set(0);
+        expect(throws<std::out_of_range>([&test_set](){test_set.set(32);}));
+    };
 };
 }
