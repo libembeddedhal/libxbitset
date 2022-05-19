@@ -24,7 +24,8 @@ set(CMAKE_BUILD_TYPE Debug)
 add_executable(${TEST_NAME} 
   tests/main.test.cpp
   tests/bitset.test.cpp
-  tests/bitreset.test.cpp)
+  tests/bitreset.test.cpp
+  tests/bitflip.test.cpp)
 enable_testing()
 add_test(NAME ${TEST_NAME} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   COMMAND ${TEST_NAME})
